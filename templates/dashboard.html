@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Área do Cliente</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fafafa;
+            text-align: center;
+            padding: 50px;
+        }
+        h2 {
+            margin-bottom: 40px;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+        .btn-container a {
+            padding: 15px 30px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+        .btn-container a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Olá {{ session.cliente_nome }}, o que deseja fazer?</h2>
+
+    <div class="btn-container">
+        <a href="/pedidos">Acompanhar Pedido</a>
+        <a href="/menu">Fazer Novo Pedido</a>
+    </div>
+
+</body>
+</html>
