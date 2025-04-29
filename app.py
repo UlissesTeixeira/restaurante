@@ -12,6 +12,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = 'chave_secreta'
 app.config['UPLOAD_FOLDER'] = 'static/images'
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 # Criar o banco de dados
 with app.app_context():
@@ -34,6 +35,7 @@ class Produto(db.Model):
     descricao = db.Column(db.Text, nullable=False)
     preco = db.Column(db.Float, nullable=False)
     imagem = db.Column(db.String(100), nullable=False)
+    categoria = db.Column(db.String(100), nullable=True)
 
 # Modelo para armazenar pedidos
 class Pedido(db.Model):
@@ -122,6 +124,7 @@ def cadastrar():
     nome = request.form['nome']
     descricao = request.form['descricao']
     preco = float(request.form['preco'])
+    categoria = request.form['categoria']
     imagem = request.files['imagem']
 
     if imagem:
@@ -132,7 +135,7 @@ def cadastrar():
         imagem_path = os.path.join(upload_folder, filename)
         imagem.save(imagem_path)
 
-        novo_produto = Produto(nome=nome, descricao=descricao, preco=preco, imagem=filename)
+        novo_produto = Produto(nome=nome, descricao=descricao, preco=preco,imagem=filename,categoria=categoria)
         db.session.add(novo_produto)
         db.session.commit()
     
@@ -157,6 +160,15 @@ def finalizar_pedido():
     db.session.add(novo_pedido)
     db.session.commit()
     return jsonify({'success': True, 'message': 'Pedido salvo com sucesso'})
+
+
+@app.route('/')
+def home():
+    produtos = Produto.query.all()
+    return render_template('index.html', produtos=produtos)
+
+
+
 
 
 
