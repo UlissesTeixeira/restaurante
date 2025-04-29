@@ -31,6 +31,19 @@
             max-height: 500px;
             object-fit: cover;
         }
+        .botao-login {
+            background-color: red;
+            color: yellow;
+            font-weight: bold;
+            border-radius: 10px;
+            font-weight: bold;
+            border-radius: 10px;           
+        }
+        .centralizar-botao {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -39,8 +52,8 @@
 <div class="banner">
 
 </div>
-<div class="menu">s   
-    <a href="{{ url_for('login') }}" class="btn  btn-light btn-lg login-button">Peça já o seu</a>
+<div class="centralizar-botao">   
+    <a href="{{ url_for('login') }}" class="btn botao-login">Peça já o seu</a>
 </div>
 
 <!-- CARROSSEL DE PRODUTOS -->
