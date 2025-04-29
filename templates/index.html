@@ -31,19 +31,43 @@
             max-height: 500px;
             object-fit: cover;
         }
-        .botao-login {
-            background-color: red;
-            color: yellow;
-            font-weight: bold;
-            border-radius: 10px;
-            font-weight: bold;
-            border-radius: 10px;           
-        }
         .centralizar-botao {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.botao-login {
+    background-color: red;
+    color: yellow;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 20px;
+    text-decoration: none; /* sem sublinhado */
+    transition: background-color 0.3s ease;
+}
+
+.botao-login:hover {
+    background-color: darkred; /* efeito ao passar o mouse */
+}
+
+
+@media (max-width: 768px) {
+    .botao-login {
+        padding: 10px 20px;
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .botao-login {
+        padding: 8px 16px;
+        font-size: 16px;
+    }
+}
+
+
     </style>
 </head>
 <body>
