@@ -102,6 +102,7 @@
 
     <div class="menu-container">
         <h1>Menu</h1>
+
         {% for produto in produtos %}
             <div class="menu-item">
                 <img src="{{ url_for('static', filename='images/' + produto.imagem) }}" alt="{{ produto.nome }}">

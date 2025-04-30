@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -28,14 +28,27 @@ class Usuario(db.Model):
     usuario = db.Column(db.String(50), unique=True, nullable=False)
     senha = db.Column(db.String(200), nullable=False)
 
-# Modelo para armazenar os produtos
+class Categoria(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False, unique=True)
+    produtos = db.relationship('Produto', backref='categoria_obj', lazy=True)
+
 class Produto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
     descricao = db.Column(db.Text, nullable=False)
     preco = db.Column(db.Float, nullable=False)
     imagem = db.Column(db.String(100), nullable=False)
-    categoria = db.Column(db.String(100), nullable=True)
+    categoria_id = db.Column(db.Integer, db.ForeignKey('categoria.id'), nullable=True)    
+
+# Modelo para armazenar os produtos
+#class Produto(db.Model):
+#    id = db.Column(db.Integer, primary_key=True)
+#    nome = db.Column(db.String(100), nullable=False)
+#    descricao = db.Column(db.Text, nullable=False)
+#    preco = db.Column(db.Float, nullable=False)
+#    imagem = db.Column(db.String(100), nullable=False)
+#    categoria = db.Column(db.String(100), nullable=True)
 
 # Modelo para armazenar pedidos
 class Pedido(db.Model):
@@ -94,9 +107,10 @@ def cadastro():
 @app.route('/menu')
 def menu():
     produtos = Produto.query.all()
+    categorias = Categoria.query.order_by(Categoria.nome).all()
     if 'usuario' not in session:
         return redirect(url_for('login.html'))
-    return render_template('menu.html', produtos=produtos)
+    return render_template('menu.html', produtos=produtos, categorias=categorias)
 
 @app.route('/pedidos')
 def pedidos():
@@ -117,15 +131,16 @@ def pedidos():
 
 @app.route('/cadastro_p')
 def cadastro_p():
-    return render_template('cadastro_produtos.html')
+    categorias = Categoria.query.all()
+    return render_template('cadastro_produtos.html', categorias=categorias)
 
 @app.route('/cadastrar', methods=['POST'])
 def cadastrar():
     nome = request.form['nome']
     descricao = request.form['descricao']
     preco = float(request.form['preco'])
-    categoria = request.form['categoria']
     imagem = request.files['imagem']
+    categoria_id = int(request.form['categoria_id'])
 
     if imagem:
         filename = secure_filename(imagem.filename)
@@ -135,7 +150,7 @@ def cadastrar():
         imagem_path = os.path.join(upload_folder, filename)
         imagem.save(imagem_path)
 
-        novo_produto = Produto(nome=nome, descricao=descricao, preco=preco,imagem=filename,categoria=categoria)
+        novo_produto = Produto(nome=nome, descricao=descricao, preco=preco,imagem=filename,categoria_id=categoria_id)
         db.session.add(novo_produto)
         db.session.commit()
     
@@ -161,15 +176,31 @@ def finalizar_pedido():
     db.session.commit()
     return jsonify({'success': True, 'message': 'Pedido salvo com sucesso'})
 
+@app.route('/categoria')
+def categoria():
+    return render_template('categoria.html')
+
+@app.route('/cadastrar_categoria', methods=['POST'])
+def cadastrar_categoria():
+    nome = request.form['nome']
+    if nome:
+        nova_categoria = Categoria(nome=nome)
+        db.session.add(nova_categoria)
+        db.session.commit()
+        flash('Categoria cadastrada com sucesso!', 'success')
+    else:
+        flash('O nome da categoria é obrigatório!', 'danger')
+    return redirect(url_for('categoria'))
 
 @app.route('/')
 def home():
     produtos = Produto.query.all()
-    return render_template('index.html', produtos=produtos)
+    categorias = Categoria.query.order_by(Categoria.nome).all()
+    return render_template('index.html', produtos=produtos, categorias=categorias)
 
 
 
-
+app.secret_key = '121416'
 
 
 if __name__ == '__main__':
